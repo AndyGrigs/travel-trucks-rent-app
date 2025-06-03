@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+root {
+  --main-color: #101828;
+  --text-color: #475467;
+  --gray-color: #6C717B;
+  --lightgray-color: #DADDE1;
+  --button-color: #E44848;
+  --button-hover-color: #D84343;
+  --rating-color: #FFC531;
+  --badges-color: #F2F4F7;
+  --inputs-color: #F2F7F7;
+  --white-color: #FFFFFF;
+}
