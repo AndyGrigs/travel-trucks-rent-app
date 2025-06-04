@@ -14,3 +14,15 @@ root {
   --inputs-color: #F2F7F7;
   --white-color: #FFFFFF;
 }
+
+
+body{
+  
+
+/* Body */
+font-family: Inter;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: 24px; /* 150% */
+}
