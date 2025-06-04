@@ -5,9 +5,9 @@ import Logo from "../shared/Logo";
 const Navbar = () => {
   return (
     <nav>
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-[64px] py-[24px] flex justify-between items-center">
         <NavLink to="/">
-          <Logo />
+          <Logo className='w-[136px] h-[16px]'/>
         </NavLink>
         <div className="space-x-4">
           <NavLink
