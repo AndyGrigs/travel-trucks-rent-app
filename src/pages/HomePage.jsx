@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import image from '../assets/hero.jpg'
 import Button from '../shared/Button'
 const HomePage = () => {
+    const navigate = useNavigate();
   return (
     <section style={{backgroundImage: `url(${image})`}}  className='min-h-[100vh] bg-cover bg-center flex items-center bg-zinc-300 bg-blend-multiply' >
  <div className="container pl-[64px] text-inputs">
@@ -11,7 +13,7 @@ const HomePage = () => {
           You can find everything you want in our catalog
         </p>
         
-        <Button text="View Now"/>
+        <Button onClick={()=> navigate('/catalog')} text="View Now"/>
       </div>
     </section>
   )
