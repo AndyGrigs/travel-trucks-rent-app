@@ -56,11 +56,15 @@ const campersSlice = createSlice({
     list: [],
     page: 1,
     favorites: [],
-    filters: {},
+    filters: {
+      location: "",
+      bodyType: "",
+      amenities: [],
+    },
     loading: false,
     error: null,
     hasMore: true,
-    isFiltered: false,
+    currentPage: 1
   },
   reducers: {
     setCampers: (state, action) => {
