@@ -35,20 +35,20 @@ export const fetchCampersByFilters = createAsyncThunk(
         limit: 4,
       });
 
-      if(filters.location){
-        params.append('location', filters.location)
+      if (filters.location) {
+        params.append("location", filters.location);
       }
-      if(filters.type){
-        params.append('form', filters.type)
+      if (filters.type) {
+        params.append("form", filters.type);
       }
 
-      if(filters.options && filters.options.length > 0){
-        filters.options.forEach(opt=>{
-          const key = apiOptionKeys[opt]
-          if(key){
-            params.append.key = true
+      if (filters.options && filters.options.length > 0) {
+        filters.options.forEach((opt) => {
+          const key = apiOptionKeys[opt];
+          if (key) {
+            params.append.key = true;
           }
-        })
+        });
       }
 
       const res = await axios.get(`${API_URL}?${params.toString()}`);
@@ -67,13 +67,13 @@ const campersSlice = createSlice({
     favorites: [],
     filters: {
       location: "",
-      bodyType: "",
-      amenities: [],
+      type: "",
+      optinons: [],
     },
     loading: false,
     error: null,
     hasMore: true,
-    currentPage: 1
+    isFiltered: false,
   },
   reducers: {
     setCampers: (state, action) => {
@@ -82,6 +82,7 @@ const campersSlice = createSlice({
     resetPage: (state) => {
       state.page = 1;
       state.hasMore = true;
+      state.list = [];
     },
 
     setFilters: (state, action) => {
@@ -89,10 +90,15 @@ const campersSlice = createSlice({
       state.page = 1;
       state.hasMore = true;
       state.isFiltered = true;
+      state.list = [];
     },
 
     clearFilters: (state) => {
-      state.filters = {};
+      state.filters = {
+        location: "",
+        type: "",
+        optinons: [],
+      };
       state.page = 1;
       state.list = [];
       state.hasMore = true;
@@ -107,14 +113,12 @@ const campersSlice = createSlice({
       })
 
       .addCase(fetchCampersByPage.fulfilled, (state, action) => {
-        if (!state.isFiltered) {
-          state.loading = false;
-          if (action.payload.length === 0) {
-            state.hasMore = false;
-          } else {
-            state.page += 1;
-            state.list.push(...action.payload);
-          }
+        state.loading = false;
+        if (action.payload.length === 0) {
+          state.hasMore = false;
+        } else {
+          state.page += 1;
+          state.list.push(...action.payload);
         }
       })
 
@@ -124,12 +128,14 @@ const campersSlice = createSlice({
       })
       .addCase(fetchCampersByFilters.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchCampersByFilters.fulfilled, (state, action) => {
         state.loading = false;
         state.page = 2;
         state.list = action.payload;
         state.hasMore = action.payload.length === 4;
+        state.isFiltered = true;
       })
       .addCase(fetchCampersByFilters.rejected, (state, action) => {
         state.loading = false;
