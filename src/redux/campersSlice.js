@@ -33,14 +33,23 @@ export const fetchCampersByFilters = createAsyncThunk(
       const params = new URLSearchParams({
         page: 1,
         limit: 4,
-        ...(filters.location && { location: filters.location }),
-        ...(filters.type && { form: filters.type }),
-        ...(filters.options || []).reduce((acc, opt) => {
-          const key = apiOptionKeys[opt];
-          if (key) acc[key] = true;
-          return acc;
-        }, {}),
       });
+
+      if(filters.location){
+        params.append('location', filters.location)
+      }
+      if(filters.type){
+        params.append('form', filters.type)
+      }
+
+      if(filters.options && filters.options.length > 0){
+        filters.options.forEach(opt=>{
+          const key = apiOptionKeys[opt]
+          if(key){
+            params.append.key = true
+          }
+        })
+      }
 
       const res = await axios.get(`${API_URL}?${params.toString()}`);
       return res.data.items;
