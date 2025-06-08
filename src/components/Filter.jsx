@@ -98,10 +98,10 @@ const Filter = () => {
           Apply Filters
         </button>
         <button
-          onClick={handleFilters}
+          onClick={handleClearFilters}
           className=" border-lightgray  border px-4 py-3 rounded-lg hover:bg-badges transition-colors font-medium"
         >
-          Apply Filters
+          Clear Filters
         </button>
       </div>
     </div>
