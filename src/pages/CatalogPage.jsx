@@ -16,7 +16,8 @@ const CatalogPage = () => {
     if (list.length === 0) {
       dispatch(fetchCampersByPage({page: 1, filters}));
     }
-  }, [dispatch, list.length, filters]);
+
+  }, [dispatch, filters]);
 
   const handleLoadMore = () => {
     dispatch(fetchCampersByPage({page, filters}));
@@ -32,8 +33,11 @@ const CatalogPage = () => {
         <div className="flex-1">
 
           <div className="space-y-6 lg:space-y-8">
-            {list.map((camper) => (
+            {/* {list.map((camper) => (
               <CamperCard key={camper.id} camper={camper} />
+            ))} */}
+            {list.map((camper, idx) => (
+              <CamperCard key={typeof camper.id === "string" || typeof camper.id === "number" ? camper.id : idx} camper={camper} />
             ))}
           </div>
 
@@ -49,7 +53,7 @@ const CatalogPage = () => {
           {loading && <Loader />}
 
           {hasMore && !loading && list.length > 0 && (
-            <div className="text-center py-5">
+            <div className="text-center py-8">
               <Button text="Load More" onClick={handleLoadMore} />
             </div>
           )}

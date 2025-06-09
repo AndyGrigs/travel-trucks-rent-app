@@ -4,8 +4,8 @@ import Button from '../shared/Button'
 const HomePage = () => {
     const navigate = useNavigate();
   return (
-    <section style={{backgroundImage: `url(${image})`}}  className='min-h-[100vh] bg-cover bg-center flex items-center bg-zinc-300 bg-blend-multiply' >
- <div className="container pl-[64px] text-inputs">
+    <section style={{backgroundImage: `url(${image})`}}  className='min-h-[calc(100vh-73px)] bg-cover bg-center flex items-center bg-zinc-300 bg-blend-multiply overflow-hidden' >
+      <div className="container pl-[64px] text-inputs">
         <h1 className="text-[48px] font-semibold mb-[16px]">
           Campers of your dreams
         </h1>

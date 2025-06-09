@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import HeartSvg from '../shared/HeartSvg';
 import ACSvg from '../shared/ACSvg';
 import AutomaticSvg from '../shared/AutomaticSvg';
@@ -7,78 +7,91 @@ import TVSvg from '../shared/TVSvg';
 import BathroomSvg from '../shared/BathroomSvg';
 import PetrolSvg from '../shared/PetrolSvg';
 import LocationSvg from '../shared/LocationSvg';
+import StarSvg from '../shared/StarSvg';
+import Button from '../shared/Button';
 
 const featureIcons = {
   AC: <ACSvg/>,
-  Automatic: <AutomaticSvg/>,
-  Kitchen: <KitchenSvg/>,
+  automatic: <AutomaticSvg/>,
+  kitchen: <KitchenSvg/>,
   TV: <TVSvg/>,
-  Bathroom: <BathroomSvg/>,
-  Petrol: <PetrolSvg/>,
+  bathroom: <BathroomSvg/>,
+  petrol: <PetrolSvg/>,
 };
 
 const CamperCard = ({ camper }) => {
+const navigate = useNavigate();
+
   const features = [
-    camper.AC && 'AC',
-    camper.automatic && 'Automatic',
-    camper.kitchen && 'Kitchen',
-    camper.TV && 'TV',
-    camper.bathroom && 'Bathroom',
-    camper.petrol && 'Petrol',
+    camper.AC && { key: 'AC', label: 'AC' },
+    camper.automatic && { key: 'automatic', label: 'Automatic' },
+    camper.kitchen && { key: 'kitchen', label: 'Kitchen' },
+    camper.TV && { key: 'TV', label: 'TV' },
+    camper.bathroom && { key: 'bathroom', label: 'Bathroom' },
+    camper.petrol && { key: 'petrol', label: 'Petrol' },
   ].filter(Boolean);
 
+  const handleNavigate = () => {
+    navigate(`/catalog/${camper.id}`);
+  };
+
   return (
-     <div className="flex bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+  <div className="flex bg-white flex-col lg:flex-row border border-lightgray rounded-2xl p-4 lg:p-6 shadow-sm">
   {/* Зображення */}
-  <img
-    src={camper.gallery?.[0]?.original || '/images/placeholder.jpg'}
-    alt={camper.name}
-    className="w-[290px] h-[230px] object-cover rounded-lg flex-shrink-0 mr-6"
-  />
+      <div className='w-full lg:w-[290px] flex-shrink-0'>
+        <img
+        src={camper.gallery?.[0]?.original || '/images/placeholder.jpg'}
+        alt={camper.name}
+        className="h-[200px] lg:h-full object-cover rounded-lg"
+      />
+      </div>
 
   {/* Контент */}
-  <div className="flex flex-col justify-between flex-1 w-1/2 min-w-0">
+  <div className="flex flex-col justify-between flex-1 min-w-0 pl-4">
     {/* Верхня частина */}
     <div>
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="text-xl font-bold text-gray-900 truncate">{camper.name}</h3>
-        <div className="text-xl font-bold text-gray-900 flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-2">
+        <h3 className="text-xl font-semibold lg:text-2xl truncate">{camper.name}</h3>
+        <div className=" text-xl lg:text-2xl font-bold text-main flex items-center gap-2">
           €{Number(camper.price).toLocaleString('de-DE')}.00
-          <HeartSvg />
+          <HeartSvg camperId={camper.id}/>
         </div>
       </div>
 
-      <div className="flex items-center text-sm text-gray-500 mb-2">
-        <span className="text-yellow-400 mr-1">★</span>
+      <div className="flex flex-col sm:flex-row sm:items-center text-sm text-main mb-2">
+        <span className="text-badge mr-1"><StarSvg filled/></span>
         <span className="mr-2">{camper.rating || '4.4'} ({camper.reviews?.length || 2} Reviews)</span>
         <span className="mx-2"><LocationSvg/></span>
         <span className="truncate">{camper.location}</span>
       </div>
 
-      <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+      <p className="text-gray text-sm mb-4 line-clamp-2">
         {camper.description}
       </p>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        {features.map((feature) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {features.slice(0, 4).map((feature) => (
           <span
             key={feature}
-            className="flex items-center bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium"
+            className="flex items-center bg-badges px-3 py-2 rounded-full gap-2"
           >
-            {featureIcons[feature] && <span className="mr-1">{featureIcons[feature]}</span>}
-            {feature}
+           
+           {featureIcons[feature.key]}
+           {feature.label}
           </span>
         ))}
       </div>
     </div>
 
     {/* Кнопка */}
-    <Link
+    {/* <Link
       to={`/catalog/${camper.id}`}
-      className="self-start text-white bg-button hover:bg-button-hover px-6 py-2 rounded-full font-semibold transition"
+      className="bg-button w-[166px] text-white  font-medium px-[60px] py-[16px] rounded-[200px] hover:bg-button-hover transition"
+      
     >
       Show more
-    </Link>
+    </Link> */}
+    <div> <Button text="Show more" onClick={handleNavigate}/></div>
   </div>
 </div>
 
