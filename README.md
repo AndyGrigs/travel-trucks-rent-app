@@ -50,7 +50,7 @@ npm run dev
 
 ### 4. Open in browser
 
-Go to `http://localhost:5173/` (or the URL shown in your terminal).
+Go to `travel-trucks-rent-app.vercel.app/`.
 
 ## 🌐 API
 
@@ -97,6 +97,4 @@ This project is for educational/demo purposes.
 ---
 
 **Created with ❤️ for learning and portfolio.**
-```
-Готово!  
-Можеш вставити це у свій файл `README.md`. Якщо треба додати розділ зі скріншотами чи інструкції для середовища — просто скажи!
+
