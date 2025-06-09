@@ -1,58 +1,24 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { fetchCampers, fetchCamperById } from "../services/api";
 
-const API_URL = "https://66b1f8e71ca8ad33d4f5f63e.mockapi.io/campers";
-
-const apiOptionKeys = {
-  AC: "AC",
-  TV: "TV",
-  Automatic: "automatic",
-  Kitchen: "kitchen",
-  Bathroom: "bathroom",
-  Petrol: "petrol",
-};
 
 export const fetchCampersByPage = createAsyncThunk(
   "campers/fetchCampersByPage",
-  async (page, { rejectWithValue }) => {
+  async ({ page, filters }, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_URL}?page=${page}&limit=4`);
-      return res.data.items;
+      const data = await fetchCampers(page, filters);
+      return data.items || data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
-
-export const fetchCampersByFilters = createAsyncThunk(
-  "campers/fetchCampersByFilters",
-  async (_, { getState, rejectWithValue }) => {
+export const fetchCamperDetails = createAsyncThunk(
+  "campers/fetchCamperDetails",
+  async (id, { rejectWithValue }) => {
     try {
-      const { filters } = getState().campers;
-
-      const params = new URLSearchParams({
-        page: 1,
-        limit: 4,
-      });
-
-      if (filters.location) {
-        params.append("location", filters.location);
-      }
-      if (filters.type) {
-        params.append("form", filters.type);
-      }
-
-      if (filters.options && filters.options.length > 0) {
-        filters.options.forEach((opt) => {
-          const key = apiOptionKeys[opt];
-          if (key) {
-            params.append.key = true;
-          }
-        });
-      }
-
-      const res = await axios.get(`${API_URL}?${params.toString()}`);
-      return res.data.items;
+      const data = await fetchCamperById(id);
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -63,33 +29,27 @@ const campersSlice = createSlice({
   name: "campers",
   initialState: {
     list: [],
+    currentCamper: null,
     page: 1,
-    favorites: [],
     filters: {
       location: "",
       type: "",
-      optinons: [],
+      form: "",
+      AC: false,
+      automatic: false,
+      kitchen: false,
+      TV: false,
+      bathroom: false,
     },
     loading: false,
     error: null,
     hasMore: true,
-    isFiltered: false,
   },
   reducers: {
-    setCampers: (state, action) => {
-      state.list = action.payload;
-    },
-    resetPage: (state) => {
-      state.page = 1;
-      state.hasMore = true;
-      state.list = [];
-    },
-
     setFilters: (state, action) => {
-      state.filters = action.payload;
+      state.filters = { ...state.filters, ...action.payload };
       state.page = 1;
       state.hasMore = true;
-      state.isFiltered = true;
       state.list = [];
     },
 
@@ -97,12 +57,21 @@ const campersSlice = createSlice({
       state.filters = {
         location: "",
         type: "",
-        optinons: [],
+        form: "",
+        AC: false,
+        automatic: false,
+        kitchen: false,
+        TV: false,
+        bathroom: false,
       };
       state.page = 1;
       state.list = [];
       state.hasMore = true;
-      state.isFiltered = false;
+    },
+    resetPage: (state) => {
+      state.page = 1;
+      state.hasMore = true;
+      state.list = [];
     },
   },
   extraReducers: (builder) => {
@@ -111,39 +80,37 @@ const campersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-
       .addCase(fetchCampersByPage.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload.length === 0) {
-          state.hasMore = false;
+        const newCampers = action.payload;
+        if (state.page === 1) {
+          state.list = newCampers;
         } else {
-          state.page += 1;
-          state.list.push(...action.payload);
+          state.list.push(...newCampers);
         }
+        state.page += 1;
+        state.hasMore = newCampers.length === 4;
       })
 
       .addCase(fetchCampersByPage.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
-      .addCase(fetchCampersByFilters.pending, (state) => {
+
+      .addCase(fetchCamperDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCampersByFilters.fulfilled, (state, action) => {
+      .addCase(fetchCamperDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.page = 2;
-        state.list = action.payload;
-        state.hasMore = action.payload.length === 4;
-        state.isFiltered = true;
+        state.currentCamper = action.payload;
       })
-      .addCase(fetchCampersByFilters.rejected, (state, action) => {
+      .addCase(fetchCamperDetails.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });
 
-export const { setCampers, resetPage, setFilters, clearFilters } =
-  campersSlice.actions;
+export const { setFilters, clearFilters, resetPage} = campersSlice.actions;
 export default campersSlice.reducer;
