@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import campersReducer from "./campersSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from 'redux-persist';
+import favoritesReducer from './favoritesSlice'
 
 const persistConfig = {
   key: "root",
