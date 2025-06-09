@@ -8,7 +8,7 @@ import Filter from "../components/Filter";
 
 const CatalogPage = () => {
   const dispatch = useDispatch();
-  const { list, page, loading, hasMore, error, filters } = useSelector(
+  const { list, page, loading, hasMore, filters } = useSelector(
     (state) => state.campers
   );
 
@@ -30,11 +30,6 @@ const CatalogPage = () => {
         </div>
 
         <div className="flex-1">
-          {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
-              Something went wrong...{error}
-            </div>
-          )}
 
           <div className="space-y-6 lg:space-y-8">
             {list.map((camper) => (

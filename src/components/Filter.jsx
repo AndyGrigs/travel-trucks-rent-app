@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  
-  resetPage,
   setFilters,
   clearFilters,
   fetchCampersByPage,
@@ -17,11 +15,22 @@ import FullyFilterSvg from '../shared/FullyFilterSvg'
 import AlgoFilterSvg from '../shared/AlgoFilterSvg'
 import MapSvg from '../shared/MapSvg';
 
+const initialFilters = {
+  location: "",
+  type: "",
+  form: "",
+  AC: false,
+  automatic: false,
+  kitchen: false,
+  TV: false,
+  bathroom: false,
+};
+
 
 const Filter = () => {
   const dispatch = useDispatch();
   const currentFilters = useSelector((state) => state.campers.filters);
-  const [location, setLocation] = useState(currentFilters.location || "");
+  const [filters, setLocalFilters] = useState(currentFilters);
 
   const equipmentOptions = [
     {key: 'AC', label: 'AC', icon: <ACSvg/>},
@@ -34,46 +43,63 @@ const Filter = () => {
   const camperTypes = [
     {key: 'panelTruck', label: 'Van', icon: <VanFilterSvg/>},
     {key: 'fullyIntegrated', label: 'Fully Integrated', icon: <FullyFilterSvg/>},
-    {key: 'panelTruck', label: 'Van', icon: <AlgoFilterSvg/>},
+    {key: 'alcove', label: 'Alcove', icon: <AlgoFilterSvg/>},
   ]
 
-  const handleEquipmentToggle = (key)=>{
-    const newFilters = {
-      ...currentFilters, 
-      [key]: !currentFilters[key]
+  const handleEquipmentToggle = (key) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const handleCamperTypeSelect = (type) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      type: prev.type === type ? "" : type
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      location: e.target.value
+    }));
+  };
+
+  const handleSearch = () => {
+    dispatch(setFilters(filters));
+    dispatch(fetchCampersByPage({page: 1, filters}));
+  };
+
+  const isFiltersEmpty = (filtersObj) => {
+    return Object.entries(initialFilters).every(
+      ([key, value]) => filtersObj[key] === value
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isFiltersEmpty(filters)) {
+      dispatch(clearFilters());
+      setLocalFilters(initialFilters); // <-- Reset local state too!
+    } else {
+      dispatch(setFilters(filters));
+      dispatch(fetchCampersByPage({page: 1, filters}));
     }
-    dispatch(setFilters(newFilters))
-  }
+  };
 
-  const handleCamperTypeSelect = (type)=>{
-    const newFilters = {
-      ...currentFilters, 
-      form: currentFilters.form === type ? ' ' : type
-    }
-    dispatch(setFilters(newFilters))
-  }
 
- const handleSearch = () => {
-  const filters = {...currentFilters, location}
-  dispatch(setFilters(filters))
-  dispatch(fetchCampersByPage({page: 1, filters}))
- }
-
- const handleClearFilters = ()=> {
-  setLocation("");
-  dispatch(clearFilters());
- }
-  
   return (
-    <div className="bg-white   mb-6 max-w-sm">
+    <form onSubmit={handleSubmit} className="bg-white   mb-6 max-w-sm">
 
       <div className="mb-6">
         <label className="block mb-2  text-gray">Location</label>
         <div className="relative text-main">
           <input
             type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            value={filters.location}
+            onChange={handleLocationChange}
             placeholder="Kyiv, Ukraine"
             className="w-full bg-inputs rounded-[12px]  px-[58px]  py-[18px] focus:outline-none focus:ring-button focus:border-transparent pl-10 placeholder:text-main"
           />
@@ -92,29 +118,41 @@ const Filter = () => {
           <div className='grid grid-cols-3 gap-2'>
             {equipmentOptions.map(option=>(
               <button
+                type='button'
                 key={option.key}
-                onClick={handleEquipmentToggle(option.key)}
-                className={`flex flex-col items-center justify-center p-3 rounded-[12px]`}
+                onClick={()=>handleEquipmentToggle(option.key)}
+                className={`flex flex-col items-center font-semibold justify-center p-3 rounded-[12px] border-2 ${
+                  filters[option.key] ? 'border-button' : 'border-lightgray hover:border-grey'
+                }`}
               ><div>{option.icon}</div>{option.label}</button>
             ))}
           </div>
+          <h2 className='font-semibold text-[20px] mb-6'>Vehicle type</h2>
+          <hr className='border-lightgray mb-6' />
+          <div className='grid grid-cols-3 gap-2'>
+            {camperTypes.map(type=>(
+              <button
+                type='button'
+                key={type.key}
+                onClick={()=>handleCamperTypeSelect(type.key)}
+                className={`flex flex-col items-center font-semibold justify-center p-3 rounded-[12px] border-2 ${
+                  filters.type === type.key ? 'border-button' : 'border-lightgray hover:border-grey'
+                }`}
+              >
+                <div>{type.icon}</div>
+                <label>{type.label}</label>
+              </button>
+            ))}
+          </div>
       </div> 
-
-      <div className="flex gap-3">
+      
         <button
-          onClick={handleSearch}
-          className="flex-1 bg-button text-white px-4 py-3 rounded-lg hover:bg-button-hover transition-colors font-medium"
+          className="bg-button w-[166px] text-white text-[16px] font-medium px-[60px] py-[16px] rounded-[200px] hover:bg-button-hover transition"
         >
-          Apply Filters
+          Search
         </button>
-        <button
-          onClick={handleClearFilters}
-          className=" border-lightgray  border px-4 py-3 rounded-lg hover:bg-badges transition-colors font-medium"
-        >
-          Clear Filters
-        </button>
-      </div>
-    </div>
+      
+    </form>
   );
 };
 
