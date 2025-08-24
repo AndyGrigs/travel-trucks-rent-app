@@ -118,4 +118,4 @@ const CamperCard = ({ camper }) => {
   );
 };
 
-export default CamperCard;
+export default CamperCard;w

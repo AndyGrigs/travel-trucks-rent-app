@@ -51,7 +51,7 @@ const Filter = ({ onFilterApply }) => {
       [key]: !prev[key]
     }));
   };
-
+       
   const handleCamperTypeSelect = (type) => {
     setLocalFilters(prev => ({
       ...prev,
@@ -195,4 +195,4 @@ const Filter = ({ onFilterApply }) => {
   );
 };
 
-export default Filter;
+export default Filter;  
